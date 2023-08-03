@@ -19,28 +19,43 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
 // Cors
 
-
-var corsOptions = {
-  origin: "http://localhost:3000",
-};
-
-app.use(cors(corsOptions));
-
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Content-Type", "text/html");
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Authorization, X-Requested-With"
-  );
+  var whitelist = [
+    process.env.FRONT_LOCAL_URL,
+    process.env.SERVER_LOCAL_URL,
+    process.env.FRONT_URL,
+  ];
+  var host = req.get("host");
+  whitelist.forEach(function (val, key) {
+    if (host.indexOf(val) > -1) {
+      res.setHeader("Access-Control-Allow-Origin", host);
+    }
+  });
   next();
 });
+
+
+// var corsOptions = {
+//   origin: "http://localhost:3000",
+// };
+
+// app.use(cors(corsOptions));
+
+// app.use(function (req, res, next) {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
+//   );
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   res.setHeader("Content-Type", "text/html");
+
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Authorization, X-Requested-With"
+//   );
+//   next();
+// });
 
 // Connecting to database
 process.on("SIGINT", () => {
